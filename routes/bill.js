@@ -11,6 +11,7 @@ const pdf = require('html-pdf');
 const uuid = require('uuid');
 const auth = require('../services/authentification');
 const { restart } = require('nodemon');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 router.post('/generateReport', auth.authentificateToken, async (req, res) => {
     const generatedUuid = uuid.v1();
@@ -19,6 +20,8 @@ router.post('/generateReport', auth.authentificateToken, async (req, res) => {
 
     const pdfDirectory = path.resolve(__dirname, '../generated_pdf/');
     const pdfFilePath = path.join(pdfDirectory, generatedUuid + '.pdf');
+
+    const csvFilePath = path.join(pdfDirectory, generatedUuid + '.csv');
 
     try {
         await fs.mkdir(pdfDirectory, { recursive: true });
