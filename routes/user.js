@@ -76,7 +76,7 @@ router.post('/forgotPassword', (req, res) => {
                     from: process.env.EMAIL,
                     to: results[0].email,
                     subject: 'Password by Coffee Management System',
-                    html: '<p><b>Your Login details for Coffee Management System</b><br><b>Email: </b>' + results[0].email + '<br><b>Password: </b>' + results[0].password + '<br><a href="http://0.0.0.0:4200/">Click here to login</a></p>'
+                    html: '<p><b>Your Login details for Coffee Management System</b><br><b>Email: </b>' + results[0].email + '<br><b>Password: </b>' + results[0].password + '<br><a href="http://localhost:4200/">Click here to login</a></p>'
                 };
                 transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
