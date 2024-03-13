@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("./Frontend"));
+app.use(express.static("././Coffee-Management-Front/dist/Frontend"));
 
 app.use('/user', userRoute);
 app.use('/category', categoryRoute);
