@@ -83,48 +83,44 @@ router.post('/generateReport', auth.authentificateToken, async (req, res) => {
 
 router.post('/getPdf', auth.authentificateToken, async function (req, res) {
     const orderDetails = req.body;
-    const pdfPath = './generated_pdf/' + orderDetails.uuid + '.pdf';
+    const pdfPath = './generated_pdf/'+orderDetails.uuid.uuid +'.pdf';
 
-    try {
-        await fs.access(pdfPath);
-        // File exists, serve it
+    console.log('Requested PDF Path:', pdfPath);
+
+    if (rfs.existsSync(pdfPath)) {
         res.contentType("application/pdf");
         rfs.createReadStream(pdfPath).pipe(res);
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            // File does not exist, generate it
-            var productDetailsReport = JSON.parse(orderDetails.productDetails);
-            const htmlContent = await ejs.renderFile(path.join(__dirname, '', "report.ejs"), {
-                productDetails: productDetailsReport,
-                name: orderDetails.name,
-                email: orderDetails.email,
-                contactNumber: orderDetails.contactNumber,
-                paymentMethod: orderDetails.paymentMethod,
-                totalAmount: orderDetails.totalAmount
-            }, (err, results) => {
-                if (err) {
-                    return res.status(500).json(err);
-                } else {
-                    pdf.create(htmlContent).toFile(pdfPath, function (pdfErr, pdfRes) {
-                        if (pdfErr) {
-                            console.error('Error creating PDF:', pdfErr);
-                            return res.status(500).json({ error: 'Internal Server Error' });
-                        }
-    
-                        console.log('PDF creation successful:', pdfPath);
+    } else {
+        var productDetailsReport = orderDetails.productDetails;
+        ejs.renderFile(path.join(__dirname, '', "report.ejs"), {
+            productDetails: productDetailsReport,
+            name: orderDetails.name,
+            email: orderDetails.email,
+            contactNumber: orderDetails.contactNumber,
+            paymentMethod: orderDetails.paymentMethod,
+            totalAmount: orderDetails.totalAmount
+        }, (err, results) => {
+            if (err) {
+                return res.status(500).json(err);
+            } else {
+                pdf.create(htmlContent).toFile(pdfPath, function (pdfErr, pdfRes) {
+                    if (pdfErr) {
+                        console.error('Error creating PDF:', pdfErr);
+                        return res.status(500).json({ error: 'Internal Server Error' });
+                    } else {
                         res.contentType("application/pdf");
-                        fs.createReadStream(data.filename).pipe(res);
+                        rfs.createReadStream(pdfPath).pipe(res);
+                    }
 
-                        return res.status(200).json({ uuid: generatedUuid });
+                    // console.log('PDF creation successful:', pdfPath);
+                    // res.contentType("application/pdf");
+                    // fs.createReadStream(pdfPath).pipe(res);
 
-                    });
-                }
-            });
-        } else {
-            // Other error occurred
-            console.error('Error checking file existence:', error);
-            return res.status(500).json(error);
-        }
+                    // return res.status(200).json({ uuid: orderDetails.uuid });
+
+                });
+            }
+        });
     }
 })
 
