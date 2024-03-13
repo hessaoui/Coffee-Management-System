@@ -11,7 +11,7 @@ const pdf = require('html-pdf');
 const uuid = require('uuid');
 const auth = require('../services/authentification');
 const { restart } = require('nodemon');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+// const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 router.post('/generateReport', auth.authentificateToken, async (req, res) => {
     const generatedUuid = uuid.v1();
