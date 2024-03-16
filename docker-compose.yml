@@ -1,24 +1,38 @@
 version: '3.8'
+
+networks:
+  coffee-network:
+    external: true
+
+volumes:
+  coffee-data:
+    name: coffee-data
+
 services:
   app:
     build: .
+    command: npm start
     ports:
       - "8080:8080"
+    networks:
+      - coffee-network
     depends_on:
       - db
     environment:
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_USERNAME=hamza
-      - DB_PASSWORD=estia
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
       - DB_NAME=coffeenodejs
       # Autres variables d'environnement
   db:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: estia
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: coffeenodejs
-      MYSQL_USER: hamza
-      MYSQL_PASSWORD: estia
     ports:
-      - "3306:3306"
+      - "3308:3306"
+    networks:
+      - coffee-network
+    expose:
+      - 3306
